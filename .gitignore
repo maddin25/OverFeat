@@ -1,0 +1,12 @@
+# Folders
+\.idea/
+**/cmake-build-debug/
+**/CMakeFiles/
+**/build
+data/
+
+# Files
+*.o
+*.a
+*.pyc
+**/Makefile
