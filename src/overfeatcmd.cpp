@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cassert>
+#include <TH.h>
 #include "tools/ppm.hpp"
 #include "overfeat.hpp"
 
@@ -31,7 +32,6 @@ int main(int argc, char *argv[])
 	int nTopClasses = atoi(argv[2]);
 	int net_idx = atoi(argv[3]);
 	int feature_layer;
-	nTopClasses = 10;
 	if (nTopClasses <= 0)
 	{
 		if (argc < 5)
