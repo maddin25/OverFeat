@@ -17,15 +17,17 @@ set(INCLUDE_DIRS
 		bin/linux_64/
 		bin/linux_32/
 		)
+include(${PROJECTS_DIR}/src/TH/CMakeLists.txt)
 
 ###############################################################################
 # Torch
 set(TORCH_LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/TH)
-find_library(TORCH_LIBRARY
+find_library(TORCH_LIBRARIES
 		NAMES th TH
 		PATHS ${INCLUDE_DIRS})
-list(APPEND LIBRARIES ${TORCH_LIBRARY})
+list(APPEND LIBRARIES ${TORCH_LIBRARIES})
 list(APPEND LIBRARY_DIRS ${TORCH_LIBRARY_DIR})
+message("Torch libs: ${TORCH_LIBRARIES}")
 
 ###############################################################################
 # OpenMP
