@@ -10,3 +10,4 @@ data/
 *.a
 *.pyc
 **/Makefile
+src/TH/THGeneral\.h
