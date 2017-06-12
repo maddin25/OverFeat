@@ -10,25 +10,25 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	// read arguments
-	fprintf(stdout, "argv0: %s\n", argv[0]);
+	fprintf(stdout, "%20s: %s\n", "argv0 (cmd)", argv[0]);
 	if (argc < 2)
 	{
 		fprintf(stderr, "Missing argument : path to weight file\n");
 		exit(0);
 	}
-	fprintf(stdout, "argv1: %s\n", argv[1]);
+	fprintf(stdout, "%20s: %s\n", "argv1 (weight file)", argv[1]);
 	if (argc < 3)
 	{
 		fprintf(stderr, "Missing argument : (number of top classes | -1)\n");
 		exit(0);
 	}
-	fprintf(stdout, "argv2: %s\n", argv[2]);
+	fprintf(stdout, "%20s: %s\n", "argv2 (ntop)", argv[2]);
 	if (argc < 4)
 	{
 		fprintf(stderr, "Missing argument : network idx\n");
 		exit(0);
 	}
-	fprintf(stdout, "argv3: %s\n", argv[3]);
+	fprintf(stdout, "%20s: %s\n", "argv3 (net idx)", argv[3]);
 	int nTopClasses = atoi(argv[2]);
 	int net_idx = atoi(argv[3]);
 	int feature_layer;
@@ -39,25 +39,28 @@ int main(int argc, char *argv[])
 			fprintf(stderr, "Missing argument : output feature layer\n");
 			exit(0);
 		}
+		fprintf(stdout, "%20s: %s\n", "argv4 (feat. layer)", argv[4]);
 		feature_layer = atoi(argv[4]);
 	}
-	fprintf(stdout, "argv4: %s\n", argv[4]);
 
 	// initializes overfeat
-//	overfeat::init(argv[1], net_idx);
+	overfeat::init(argv[1], net_idx);
 
 	THTensor *input_raw = THTensor_(new)();
 	THTensor *input = THTensor_(new)();
 	THTensor *probas = THTensor_(new)();
 
+	fprintf(stdout, "Reading image ... ");
+
 	while (readPPM(stdin, input_raw))
 	{
 		assert(input_raw->size[0] == 3); //input must be rgb
+		int rw = input_raw->size[2], rh = input_raw->size[1];
+		fprintf(stdout, "success: image with (width=%d | height=%d)\n", rw, rh);
 
 		if (nTopClasses > 0)
 		{ // print top classes
 			// crop image to make it square
-			int rw = input_raw->size[2], rh = input_raw->size[1];
 			int dstdim = min(rh, rw);
 			THTensor_(resize3d)(input, 3, dstdim, dstdim);
 			long
@@ -81,7 +84,12 @@ int main(int argc, char *argv[])
 			for (int c = 0; c < 3; ++c)
 				for (int i = 0; i < dstdim; ++i)
 					for (int j = 0; j < dstdim; ++j)
-						data[s0 * c + s1 * i + s2 * j] = data_raw[sr0 * c + (i + yoffset) * sr1 + (j + xoffset) * sr2];
+					{
+						float val = data_raw[sr0 * c + (i + yoffset) * sr1 + (j + xoffset) * sr2];
+						data[s0 * c + s1 * i + s2 * j] = val;
+					}
+
+			fprintf(stdout, "Input dimensions: %lix%lix%li\n", input->size[0], input->size[1], input->size[2]);
 
 			// classification
 			THTensor *output = overfeat::fprop(input);
