@@ -6,6 +6,7 @@ from find_overfeat_dir import findOverfeatDir
 
 file_dir = os.path.dirname(os.path.abspath(__file__))
 overfeat_dir = findOverfeatDir(file_dir)
+overfeat_cmd_dir = os.path.join(overfeat_dir, "cmake-build-debug")
 default_data_dir = os.path.join(overfeat_dir, "data/default")
 
 parser = OptionParser()
@@ -49,8 +50,12 @@ if options.features_layer != None:
 	featurelayer = int(options.features_layer)
 
 if options.ppm == True:
-	subprocess.call("%s %s/overfeatcmd %s %d %d %d" % (ldpath, file_dir, weight_file, ntop, net_idx, featurelayer), stdin=sys.stdin, stdout=sys.stdout, shell=True)
+	subprocess.call("%s %s/overfeatcmd %s %d %d %d" % (ldpath, overfeat_cmd_dir, weight_file, ntop, net_idx, featurelayer), stdin=sys.stdin, stdout=sys.stdout, shell=True)
 if ntop < 0:
-	os.system("%s convert %s ppm:- | %s/overfeatcmd %s %d %d %d" % (ldpath, string.join(args, " "), file_dir, weight_file, ntop, net_idx, featurelayer))
+	cmd = "%s convert %s ppm:- | %s/overfeatcmd %s %d %d %d" % (ldpath, string.join(args, " "), overfeat_cmd_dir, weight_file, ntop, net_idx, featurelayer)
+	print "CMD: " + cmd
+	os.system(cmd)
 else:
-	os.system("%s convert %s -resize 231x231^ ppm:- | %s/overfeatcmd %s %d %d %d" % (ldpath, string.join(args, " "), file_dir, weight_file, ntop, net_idx, featurelayer))
+	cmd = "%s convert %s -resize 231x231^ ppm:- | %s/overfeatcmd %s %d %d %d" % (ldpath, string.join(args, " "), overfeat_cmd_dir, weight_file, ntop, net_idx, featurelayer)
+	print "CMD: " + cmd
+	os.system(cmd)
