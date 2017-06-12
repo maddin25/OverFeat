@@ -43,6 +43,6 @@ add_library(OverFeat ${SOURCE_FILES})
 target_link_libraries(OverFeat ${LIBRARIES})
 
 ###############################################################################
-# test executable
-add_executable(OverFeatTest ${SOURCE_FILES} bin/linux_64/overfeat)
-target_link_libraries(OverFeatTest ${LIBRARIES})
+# core executable
+add_executable(overfeatcmd ${SOURCE_FILES} src/overfeatcmd.cpp)
+target_link_libraries(overfeatcmd ${LIBRARIES})
