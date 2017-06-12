@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cassert>
 #include <TH.h>
+#include <math.h>
 #include "tools/ppm.hpp"
 #include "overfeat.hpp"
 
@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
 	{
 		assert(input_raw->size[0] == 3); //input must be rgb
 		int rw = input_raw->size[2], rh = input_raw->size[1];
-		fprintf(stdout, "success: image with (width=%d | height=%d)\n", rw, rh);
+		fprintf(stdout, "success: width=%d | height=%d\n", rw, rh);
 
 		if (nTopClasses > 0)
 		{ // print top classes
@@ -70,6 +71,7 @@ int main(int argc, char *argv[])
 					s0 = input->stride[0],
 					s1 = input->stride[1],
 					s2 = input->stride[2];
+
 			int xoffset = 0, yoffset = 0;
 			if (rh < rw)
 			{
@@ -79,20 +81,35 @@ int main(int argc, char *argv[])
 			{
 				yoffset = (rh - dstdim) / 2;
 			}
+
 			real *data_raw = THTensor_(data)(input_raw);
 			real *data = THTensor_(data)(input);
+
+			float v_min, v_max;
+			float channel_avg[3];
+
 			for (int c = 0; c < 3; ++c)
+			{
 				for (int i = 0; i < dstdim; ++i)
+				{
 					for (int j = 0; j < dstdim; ++j)
 					{
 						float val = data_raw[sr0 * c + (i + yoffset) * sr1 + (j + xoffset) * sr2];
+						channel_avg[c] += val;
+						v_max = max(v_max, val);
+						v_min = min(v_min, val);
 						data[s0 * c + s1 * i + s2 * j] = val;
 					}
-
+				}
+				channel_avg[c] /= dstdim * dstdim;
+				fprintf(stdout, "Average value for channel %d: %.4f\n", c, channel_avg[c]);
+			}
+			fprintf(stdout, "Value range of input in [%.4f, %.4f]\n", v_min, v_max);
 			fprintf(stdout, "Input dimensions: %lix%lix%li\n", input->size[0], input->size[1], input->size[2]);
 
 			// classification
 			THTensor *output = overfeat::fprop(input);
+			fprintf(stdout, "Output dimensions: %lix%lix%li\n", output->size[0], output->size[1], output->size[2]);
 			if ((output->size[1] != 1) || (output->size[2] != 1))
 			{
 				cerr << "Can only determine class if the output is 1x1. Reduce input size" << endl;
