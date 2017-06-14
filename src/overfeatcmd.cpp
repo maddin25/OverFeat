@@ -120,8 +120,12 @@ int main(int argc, char *argv[])
 			vector<pair<string, float> > top_classes = overfeat::get_top_classes(probas, nTopClasses);
 
 			// print output
+			const char *format = "%50s | %10.5f\n";
+			fprintf(stdout, "%50s | %10s\n", "Class", "Rating");
 			for (int i = 0; i < nTopClasses; ++i)
-				cout << top_classes[i].first << " " << top_classes[i].second << endl;
+			{
+				fprintf(stdout, format, top_classes[i].first.c_str(), top_classes[i].second);
+			}
 
 		}
 		else
