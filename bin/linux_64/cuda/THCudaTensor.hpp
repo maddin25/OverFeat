@@ -2,7 +2,7 @@
 #define __OVERFEAT_THCUDATENSOR_HPP__
 
 #include "THC.h"
-//#include "TH.h"
+#include "THTensor.hpp"
 
 #define CUDA_CHECK(a)							\
   {									\

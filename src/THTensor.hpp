@@ -2,7 +2,7 @@
 #define __OVERFEAT_THTENSOR_HPP__
 
 //#include "torch7-distro/installed/include/torch/TH/TH.h"
-#include "TH/TH.h"
+#include "TH.h"
 
 #ifdef THTensor_
 #undef THTensor_
